@@ -1,0 +1,35 @@
+{
+  "files": {
+    "main.css": "/static/css/main.c80808b3.css",
+    "main.js": "/static/js/main.d27185ff.js",
+    "static/media/OpenSpace.jpg": "/static/media/OpenSpace.1c3a1df188d44c1a3973.jpg",
+    "static/media/VirtualPiano.jpg": "/static/media/VirtualPiano.83b3416c290652b304cf.jpg",
+    "static/media/caseConverter.jpg": "/static/media/caseConverter.a95d40f950e1ae1e1117.jpg",
+    "static/media/bg.jpg": "/static/media/bg.311c5ce79207b34f9788.jpg",
+    "static/media/mars.png": "/static/media/mars.b6002f14a6c50f5e6415.png",
+    "static/media/space.png": "/static/media/space.7c1d6a1d75336be88e91.png",
+    "static/media/github.svg.png": "/static/media/github.svg.1c95b85d86a7c25b6f3c.png",
+    "static/media/1.jpg": "/static/media/1.598162eabbd45229457c.jpg",
+    "static/media/instagram.png": "/static/media/instagram.0d49347ff18ac85a43c5.png",
+    "static/media/A.mp3": "/static/media/A.e2b4b5880d6565682459.mp3",
+    "static/media/vk.png": "/static/media/vk.01b8528f9b6259cdf498.png",
+    "static/media/T.mp3": "/static/media/T.94b6be7855a70d0ea771.mp3",
+    "static/media/W.mp3": "/static/media/W.a1d71428e87d884c596d.mp3",
+    "static/media/J.mp3": "/static/media/J.f916ecbdce2a25289f58.mp3",
+    "static/media/E.mp3": "/static/media/E.a40e2c33763c0e1253f8.mp3",
+    "static/media/Y.mp3": "/static/media/Y.68c4f6234ff8f020d532.mp3",
+    "static/media/D.mp3": "/static/media/D.ce0f5c714dbdb0c43179.mp3",
+    "static/media/F.mp3": "/static/media/F.4200878dbd62b3a80305.mp3",
+    "static/media/G.mp3": "/static/media/G.13fd0b0c8e9d0b5af8ce.mp3",
+    "static/media/H.mp3": "/static/media/H.3cabecefa585178627e5.mp3",
+    "static/media/S.mp3": "/static/media/S.1c23e3d01991965961b2.mp3",
+    "static/media/U.mp3": "/static/media/U.a9e683fe39cf9ef6de5b.mp3",
+    "index.html": "/index.html",
+    "main.c80808b3.css.map": "/static/css/main.c80808b3.css.map",
+    "main.d27185ff.js.map": "/static/js/main.d27185ff.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c80808b3.css",
+    "static/js/main.d27185ff.js"
+  ]
+}
