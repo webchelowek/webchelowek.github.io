@@ -14,13 +14,13 @@
 </head>
 <body>
 
-  <h1>Конвертер регистра</h1>
+  <h1>Конвертер</h1>
 
   <textarea id="input" placeholder="Вставь текст..."></textarea>
 
   <div class="row">
-    <button onclick="toUpper()">В ВЕРХНИЙ РЕГИСТР</button>
-    <button onclick="toLower()">в нижний регистр</button>
+    <button onclick="toUpper()">в стильный регистр</button>
+    <button onclick="toLower()">В ВЕРХНИЙ РЕГИСТР</button>
   </div>
 
   <h3>Результат:</h3>
@@ -34,9 +34,34 @@
       output.textContent = input.value.toUpperCase();
     }
 
-    function toLower() {
-      output.textContent = input.value.toLowerCase();
-    }
+function toLower() {
+  const map = {
+    "л": "/\\",
+    "и": "u",
+    "ы": "bl",
+    "в": "ß",
+    "б": "6",
+    "о": "0",
+    "ш": "w",
+    "п": "n",
+    "г": "r",
+    "у": "y",
+    "й": "ũ",
+    "м": "m",
+    "ч": "4",
+    "к": "k",
+    "д": "g",
+  };
+
+  const p = 0.75; // вероятность замены
+
+  const text = input.value
+    .toLowerCase()
+    .replace(/[лиывбошпгуймчкд]/g, (ch) => (Math.random() < p ? map[ch] : ch));
+
+  output.textContent = text;
+}
+    
   </script>
 
 </body>
