@@ -19,8 +19,8 @@
   <textarea id="input" placeholder="Вставь текст..."></textarea>
 
   <div class="row">
-    <button onclick="toUpper()">в стильный регистр</button>
-    <button onclick="toLower()">В ВЕРХНИЙ РЕГИСТР</button>
+    <button onclick="toUpper()">В ВЕРХНИЙ РЕГИСТР</button>
+    <button onclick="toLower()">ß стu/\ьнblũ реruстр</button>
   </div>
 
   <h3>Результат:</h3>
@@ -50,10 +50,10 @@ function toLower() {
     "м": "m",
     "ч": "4",
     "к": "k",
-    "д": "g",
+    "д": "g"
   };
 
-  const p = 0.75; // вероятность замены
+  const p = 0.8; // вероятность замены
 
   const text = input.value
     .toLowerCase()
