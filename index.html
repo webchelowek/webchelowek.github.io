@@ -22,7 +22,14 @@
     <button onclick="toUpper()">В ВЕРХНИЙ РЕГИСТР</button>
     <button onclick="toLower()">ß стu/\ьнblũ реruстр</button>
   </div>
-
+  
+<div style="margin: 14px 0;">
+  yр0ßень сtu/\я::
+  <strong><span id="levelValue">85</span>%</strong>
+  <br>
+  <input type="range" id="level" min="0" max="100" value="85" />
+</div>
+  
   <h3>Результат:</h3>
   <pre id="output"></pre>
 
@@ -34,6 +41,13 @@
       output.textContent = input.value.toUpperCase();
     }
 
+    const level = document.getElementById("level");
+const levelValue = document.getElementById("levelValue");
+
+level.addEventListener("input", () => {
+  levelValue.textContent = level.value;
+});
+    
 function toLower() {
   const map = {
     "л": "/\\",
@@ -57,11 +71,13 @@ function toLower() {
     "д": "g"
   };
 
-  const p = 0.85; // вероятность замены
+  const p = level.value / 100; // ← теперь из ползунка
 
   const text = input.value
     .toLowerCase()
-    .replace(/[лиывтбзошпгуймячк?д]/g, (ch) => (Math.random() < p ? map[ch] : ch));
+    .replace(/[лиывтбзошпгуймячк?д]/g, ch =>
+      Math.random() < p ? map[ch] : ch
+    );
 
   output.textContent = text;
 }
