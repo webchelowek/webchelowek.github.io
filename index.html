@@ -41,7 +41,6 @@ function toLower() {
     "ы": "bl",
     "в": "ß",
     "б": "6",
-    "з": "3",
     "о": "0",
     "ш": "w",
     "п": "n",
@@ -51,15 +50,14 @@ function toLower() {
     "м": "m",
     "ч": "4",
     "к": "k",
-    "?": "¿",
     "д": "g"
   };
 
-  const p = 0.90; // вероятность замены
+  const p = 0.85; // вероятность замены
 
   const text = input.value
     .toLowerCase()
-    .replace(/[лиывбошпгуймчкд]/g, (ch) => (Math.random() < p ? map[ch] : ch));
+    .replace(/[лиывбзошпгуймячк?д]/g, (ch) => (Math.random() < p ? map[ch] : ch));
 
   output.textContent = text;
 }
