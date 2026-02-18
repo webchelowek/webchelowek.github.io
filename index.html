@@ -3,37 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Конвертер текста</title>
+  <title>Конвертер регистра</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; max-width: 900px; }
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; max-width: 900px; }
     textarea { width: 100%; min-height: 180px; font-size: 16px; padding: 12px; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
-    button, select { padding: 10px 12px; font-size: 14px; }
-    pre { background: #f6f6f6; padding: 12px; white-space: pre-wrap; word-break: break-word; }
-    .muted { color: #666; font-size: 13px; }
+    .row { display: flex; gap: 12px; margin: 12px 0; }
+    button { padding: 10px 14px; font-size: 14px; cursor: pointer; }
+    pre { background: #f5f5f5; padding: 12px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <h1>Простой конвертер текста</h1>
 
-  <label for="input">Ввод:</label>
-  <textarea id="input" placeholder="Вставь текст сюда..."></textarea>
+  <h1>Конвертер регистра</h1>
+
+  <textarea id="input" placeholder="Вставь текст..."></textarea>
 
   <div class="row">
-    <select id="mode">
-      <option value="upper">В ВЕРХНИЙ РЕГИСТР</option>
-      <option value="lower">в нижний регистр</option>
-      <option value="trim">убрать лишние пробелы</option>
-      <option value="linesToCSV">строки → CSV</option>
-      <option value="csvToLines">CSV → строки</option>
-    </select>
-
-    <button id="convert">Конвертировать</button>
-    <button id="copy">Копировать результат</button>
-    <button id="clear">Очистить</button>
+    <button onclick="toUpper()">В ВЕРХНИЙ РЕГИСТР</button>
+    <button onclick="toLower()">в нижний регистр</button>
   </div>
-
-  <div class="muted">Локально в браузере, без отправки данных куда-либо.</div>
 
   <h3>Результат:</h3>
   <pre id="output"></pre>
@@ -41,82 +29,15 @@
   <script>
     const input = document.getElementById('input');
     const output = document.getElementById('output');
-    const mode = document.getElementById('mode');
 
-    function normalizeSpaces(s) {
-      // заменяем любые пробельные последовательности на одиночный пробел и trim
-      return s.replace(/\s+/g, ' ').trim();
+    function toUpper() {
+      output.textContent = input.value.toUpperCase();
     }
 
-    function linesToCSV(s) {
-      // берём непустые строки, экранируем кавычки, оборачиваем в кавычки если нужно
-      const lines = s.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
-      return lines.map(v => {
-        const escaped = v.replace(/"/g, '""');
-        return /[",\n]/.test(v) ? `"${escaped}"` : escaped;
-      }).join(',');
+    function toLower() {
+      output.textContent = input.value.toLowerCase();
     }
-
-    function csvToLines(s) {
-      // простой CSV-парсер (поддерживает кавычки и "" внутри)
-      const res = [];
-      let cur = '';
-      let inQuotes = false;
-
-      for (let i = 0; i < s.length; i++) {
-        const ch = s[i];
-        const next = s[i + 1];
-
-        if (inQuotes) {
-          if (ch === '"' && next === '"') { cur += '"'; i++; }
-          else if (ch === '"') { inQuotes = false; }
-          else { cur += ch; }
-        } else {
-          if (ch === '"') inQuotes = true;
-          else if (ch === ',') { res.push(cur.trim()); cur = ''; }
-          else { cur += ch; }
-        }
-      }
-      res.push(cur.trim());
-      return res.filter(Boolean).join('\n');
-    }
-
-    function convert() {
-      const s = input.value ?? '';
-      let r = s;
-
-      switch (mode.value) {
-        case 'upper': r = s.toUpperCase(); break;
-        case 'lower': r = s.toLowerCase(); break;
-        case 'trim':  r = normalizeSpaces(s); break;
-        case 'linesToCSV': r = linesToCSV(s); break;
-        case 'csvToLines': r = csvToLines(s); break;
-      }
-
-      output.textContent = r;
-    }
-
-    document.getElementById('convert').addEventListener('click', convert);
-
-    document.getElementById('copy').addEventListener('click', async () => {
-      const text = output.textContent || '';
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch {
-        // fallback
-        const tmp = document.createElement('textarea');
-        tmp.value = text;
-        document.body.appendChild(tmp);
-        tmp.select();
-        document.execCommand('copy');
-        tmp.remove();
-      }
-    });
-
-    document.getElementById('clear').addEventListener('click', () => {
-      input.value = '';
-      output.textContent = '';
-    });
   </script>
+
 </body>
 </html>
