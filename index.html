@@ -5,11 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Конвертер регистра</title>
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 24px; max-width: 900px; }
-    textarea { width: 100%; min-height: 180px; font-size: 16px; padding: 12px; }
-    .row { display: flex; gap: 12px; margin: 12px 0; }
-    button { padding: 10px 14px; font-size: 14px; cursor: pointer; }
-    pre { background: #f5f5f5; padding: 12px; white-space: pre-wrap; }
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      margin: 24px;
+      max-width: 900px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      font-size: 16px;
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    pre {
+      background: #f5f5f5;
+      padding: 12px;
+      white-space: pre-wrap;
+      min-height: 60px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .humanity-wrap {
+      margin: 24px 0 10px;
+    }
+
+    .humanity-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .emoji-side {
+      width: 56px;
+      text-align: center;
+      line-height: 1;
+      user-select: none;
+      transition: font-size 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+      font-size: 24px;
+    }
+
+    .save-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -19,88 +83,215 @@
   <textarea id="input" placeholder="Вставь текст..."></textarea>
 
   <div class="row">
-  <button onclick="toUpper()">В ВЕРХНИЙ РЕГИСТР</button>
-  <button onclick="toLower()">ß стu/\ьнblũ реruстр</button>
-  <button onclick="copyResult()">Копировать</button>
-</div>
-  
-<div style="margin: 14px 0;">
-  yр0ßень сtu/\я::
-  <strong><span id="levelValue">85</span>%</strong>
-  <br>
-  <input type="range" id="level" min="0" max="100" value="85" />
-</div>
-  
+    <button onclick="toUpper()">В ВЕРХНИЙ РЕГИСТР</button>
+    <button onclick="toLower()">ß стu/\ьнblũ реruстр</button>
+    <button onclick="copyResult()">Копировать</button>
+  </div>
+
+  <div style="margin: 14px 0;">
+    yр0ßень сtu/\я::
+    <strong><span id="levelValue">85</span>%</strong>
+    <br>
+    <input type="range" id="level" min="0" max="100" value="85" />
+  </div>
+
   <h3>Результат:</h3>
   <pre id="output"></pre>
 
+  <div class="humanity-wrap">
+    <div>Робот ↔ человек</div>
+    <div class="humanity-row">
+      <span id="botEmoji" class="emoji-side">🤖</span>
+      <input type="range" id="humanity" min="0" max="100" value="50" />
+      <span id="humanEmoji" class="emoji-side">🧑</span>
+    </div>
+
+    <div class="save-row">
+      <button onclick="saveSettings()">Save</button>
+      <span id="saveStatus" class="status"></span>
+    </div>
+  </div>
+
   <script>
-    const input = document.getElementById('input');
-    const output = document.getElementById('output');
+    // ВСТАВЬ СЮДА URL СВОЕГО DEPLOYED APPS SCRIPT WEB APP
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzGAc8GZeztkcAA76jCVZ2CdMfBdCfSIi5nJWHegSamZIj3oQp-tm9nML8SfY5c4c/exec";
+
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+
+    const level = document.getElementById("level");
+    const levelValue = document.getElementById("levelValue");
+
+    const humanity = document.getElementById("humanity");
+    const botEmoji = document.getElementById("botEmoji");
+    const humanEmoji = document.getElementById("humanEmoji");
+    const saveStatus = document.getElementById("saveStatus");
 
     function toUpper() {
       output.textContent = input.value.toUpperCase();
     }
 
     function copyResult() {
-  const text = output.textContent;
+      const text = output.textContent;
+      if (!text) return;
 
-  if (!text) return;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      }
+    }
 
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
-  } else {
-    // fallback для старых браузеров
-    const temp = document.createElement("textarea");
-    temp.value = text;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-  }
-}
-    
-    const level = document.getElementById("level");
-const levelValue = document.getElementById("levelValue");
+    level.addEventListener("input", () => {
+      levelValue.textContent = level.value;
+    });
 
-level.addEventListener("input", () => {
-  levelValue.textContent = level.value;
-});
-    
-function toLower() {
-  const map = {
-    "л": "/\\",
-    "и": "u",
-    "ы": "bl",
-    "в": "ß",
-    "б": "6",
-    "т": "t",
-    "з": "3",
-    "о": "0",
-    "ш": "w",
-    "п": "n",
-    "г": "r",
-    "у": "y",
-    "й": "ũ",
-    "м": "m",
-    "я": "9l",
-    "ч": "4",
-    "к": "k",
-    "?": "¿", 
-    "д": "g"
-  };
+    function toLower() {
+      const map = {
+        "л": "/\\",
+        "и": "u",
+        "ы": "bl",
+        "в": "ß",
+        "б": "6",
+        "т": "t",
+        "з": "3",
+        "о": "0",
+        "ш": "w",
+        "п": "n",
+        "г": "r",
+        "у": "y",
+        "й": "ũ",
+        "м": "m",
+        "я": "9l",
+        "ч": "4",
+        "к": "k",
+        "?": "¿",
+        "д": "g"
+      };
 
-  const p = level.value / 100; // ← теперь из ползунка
+      const p = level.value / 100;
 
-  const text = input.value
-    .toLowerCase()
-    .replace(/[лиывтбзошпгуймячк?д]/g, ch =>
-      Math.random() < p ? map[ch] : ch
-    );
+      const text = input.value
+        .toLowerCase()
+        .replace(/[лиывтбзошпгуймячк?д]/g, ch =>
+          Math.random() < p ? map[ch] : ch
+        );
 
-  output.textContent = text;
-}
-    
+      output.textContent = text;
+    }
+
+    function updateHumanityVisual() {
+      const v = Number(humanity.value) / 100;
+
+      const botSize = 24 + (1 - v) * 28;
+      const humanSize = 24 + v * 28;
+
+      botEmoji.style.fontSize = `${botSize}px`;
+      humanEmoji.style.fontSize = `${humanSize}px`;
+
+      botEmoji.style.opacity = String(0.45 + (1 - v) * 0.55);
+      humanEmoji.style.opacity = String(0.45 + v * 0.55);
+
+      botEmoji.style.transform = `scale(${0.9 + (1 - v) * 0.35})`;
+      humanEmoji.style.transform = `scale(${0.9 + v * 0.35})`;
+    }
+
+    humanity.addEventListener("input", updateHumanityVisual);
+
+    function jsonp(url) {
+      return new Promise((resolve, reject) => {
+        const cbName = `jsonp_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const script = document.createElement("script");
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("JSONP timeout"));
+        }, 10000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+          delete window[cbName];
+        }
+
+        window[cbName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("JSONP script load error"));
+        };
+
+        script.src =
+          `${url}${url.includes("?") ? "&" : "?"}` +
+          `prefix=${encodeURIComponent(cbName)}&_ts=${Date.now()}`;
+
+        document.body.appendChild(script);
+      });
+    }
+
+    async function loadSavedState() {
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_")) {
+        updateHumanityVisual();
+        return;
+      }
+
+      saveStatus.textContent = "Загружаю...";
+
+      try {
+        const data = await jsonp(`${APPS_SCRIPT_URL}?action=get`);
+
+        if (Number.isFinite(Number(data.level))) {
+          level.value = Number(data.level);
+          levelValue.textContent = String(data.level);
+        }
+
+        if (Number.isFinite(Number(data.humanity))) {
+          humanity.value = Number(data.humanity);
+        }
+
+        updateHumanityVisual();
+        saveStatus.textContent = "";
+      } catch (err) {
+        console.error(err);
+        updateHumanityVisual();
+        saveStatus.textContent = "Не удалось загрузить";
+      }
+    }
+
+    async function saveSettings() {
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_")) {
+        saveStatus.textContent = "https://script.google.com/macros/s/AKfycbzzGAc8GZeztkcAA76jCVZ2CdMfBdCfSIi5nJWHegSamZIj3oQp-tm9nML8SfY5c4c/exec";
+        return;
+      }
+
+      saveStatus.textContent = "Сохраняю...";
+
+      try {
+        const url =
+          `${APPS_SCRIPT_URL}?action=set` +
+          `&level=${encodeURIComponent(level.value)}` +
+          `&humanity=${encodeURIComponent(humanity.value)}`;
+
+        const data = await jsonp(url);
+        saveStatus.textContent = data.ok ? "Сохранено" : "Ошибка";
+      } catch (err) {
+        console.error(err);
+        saveStatus.textContent = "Ошибка сохранения";
+      }
+    }
+
+    updateHumanityVisual();
+    loadSavedState();
   </script>
 
 </body>
