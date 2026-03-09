@@ -5,12 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Конвертер регистра</title>
   <style>
-    body {
-      font-family: system-ui, Arial, sans-serif;
-      margin: 24px;
-      max-width: 900px;
-    }
+body {
+  font-family: system-ui, Arial, sans-serif;
+  margin: 24px auto;
+  max-width: 900px;
+  padding: 0 16px;
+}
 
+    .controls-panel {
+  margin-top: 32px;
+  padding: 24px;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.smoking-wrap,
+.humanity-wrap {
+  padding: 18px 16px;
+  background: white;
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+}
+
+.humanity-wrap {
+  margin-top: 18px;
+}
+
+.slider-title {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.smoking-wrap input[type="range"],
+.humanity-wrap input[type="range"] {
+  display: block;
+  margin: 0 auto;
+}
+
+.humanity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
     textarea {
       width: 100%;
       min-height: 180px;
@@ -117,22 +157,22 @@
   <h3>Результат:</h3>
   <pre id="output"></pre>
 
+ <div class="controls-panel">
   <div class="smoking-wrap">
-    <div>
-      Курение:
-      <strong><span id="smokingValue">0</span>%</strong>
-    </div>
+    <div class="slider-title">❁✿❀❁✿❀</div>
     <input type="range" id="smoking" min="0" max="100" value="0" />
     <div id="smokingVisual" class="smoking-visual"></div>
   </div>
 
   <div class="humanity-wrap">
-    <div>Робот ↔ человек</div>
+    <div class="slider-title">########</div>
     <div class="humanity-row">
       <span id="botEmoji" class="emoji-side">🤖</span>
       <input type="range" id="humanity" min="0" max="100" value="50" />
       <span id="humanEmoji" class="emoji-side">🧑</span>
     </div>
+  </div>
+</div>
 
     <div class="save-row">
       <button onclick="saveSettings()">Save</button>
