@@ -19,24 +19,6 @@
       box-sizing: border-box;
     }
 
-    .smoking-wrap {
-  margin: 24px 0 16px;
-}
-
-.smoking-visual {
-  margin-top: 10px;
-  min-height: 44px;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px 10px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 28px;
-  line-height: 1.4;
-}
-
     .row {
       display: flex;
       gap: 12px;
@@ -59,6 +41,24 @@
 
     input[type="range"] {
       width: 100%;
+    }
+
+    .smoking-wrap {
+      margin: 24px 0 16px;
+    }
+
+    .smoking-visual {
+      margin-top: 10px;
+      min-height: 44px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 28px;
+      line-height: 1.4;
     }
 
     .humanity-wrap {
@@ -86,6 +86,7 @@
       align-items: center;
       gap: 12px;
       margin-top: 12px;
+      flex-wrap: wrap;
     }
 
     .status {
@@ -116,14 +117,14 @@
   <h3>Результат:</h3>
   <pre id="output"></pre>
 
-<div class="smoking-wrap">
-  <div>
-    Курение:
-    <strong><span id="smokingValue">0</span>%</strong>
+  <div class="smoking-wrap">
+    <div>
+      Курение:
+      <strong><span id="smokingValue">0</span>%</strong>
+    </div>
+    <input type="range" id="smoking" min="0" max="100" value="0" />
+    <div id="smokingVisual" class="smoking-visual"></div>
   </div>
-  <input type="range" id="smoking" min="0" max="100" value="0" />
-  <div id="smokingVisual" class="smoking-visual"></div>
-</div>
 
   <div class="humanity-wrap">
     <div>Робот ↔ человек</div>
@@ -140,8 +141,7 @@
   </div>
 
   <script>
-    // ВСТАВЬ СЮДА URL СВОЕГО DEPLOYED APPS SCRIPT WEB APP
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_wK-lZu8cO4h8oC2gTUqXqBmf5wnq6rsGcT6rr8w9SgQ52C-_z10kfpdM4u_zB5k/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_Agml7ZT59jVTma77o1PFm7ja9z6UlGQWN5HJAEWilPbJAR9jAY0T_yd7ZD80JA/exec";
 
     const input = document.getElementById("input");
     const output = document.getElementById("output");
@@ -152,10 +152,12 @@
     const humanity = document.getElementById("humanity");
     const botEmoji = document.getElementById("botEmoji");
     const humanEmoji = document.getElementById("humanEmoji");
-    const saveStatus = document.getElementById("saveStatus");
+
     const smoking = document.getElementById("smoking");
-const smokingValue = document.getElementById("smokingValue");
-const smokingVisual = document.getElementById("smokingVisual");
+    const smokingValue = document.getElementById("smokingValue");
+    const smokingVisual = document.getElementById("smokingVisual");
+
+    const saveStatus = document.getElementById("saveStatus");
 
     function toUpper() {
       output.textContent = input.value.toUpperCase();
@@ -231,27 +233,34 @@ const smokingVisual = document.getElementById("smokingVisual");
       humanEmoji.style.transform = `scale(${0.9 + v * 0.35})`;
     }
 
-function updateSmokingVisual() {
-  const value = Number(smoking.value);
-  smokingValue.textContent = value;
+    function getSmokingSlots() {
+      const width = smokingVisual.clientWidth || 600;
+      return Math.max(8, Math.floor(width / 32));
+    }
 
-  if (value === 0) {
-    smokingVisual.textContent = "🌼".repeat(40);
-    return;
-  }
+    function updateSmokingVisual() {
+      const value = Number(smoking.value);
+      smokingValue.textContent = value;
 
-  const maxIcons = 16;
-  const count = Math.max(1, Math.ceil((value / 100) * maxIcons));
+      const slots = getSmokingSlots();
 
-  if (value === 100) {
-    smokingVisual.textContent = "💀".repeat(maxIcons);
-  } else {
-    smokingVisual.textContent = "🚬".repeat(count);
-  }
-}
+      if (value === 0) {
+        smokingVisual.textContent = "🌼".repeat(slots);
+        return;
+      }
+
+      if (value === 100) {
+        smokingVisual.textContent = "💀".repeat(slots);
+        return;
+      }
+
+      const count = Math.max(1, Math.round((value / 100) * slots));
+      smokingVisual.textContent = "🚬".repeat(count);
+    }
 
     humanity.addEventListener("input", updateHumanityVisual);
     smoking.addEventListener("input", updateSmokingVisual);
+    window.addEventListener("resize", updateSmokingVisual);
 
     function jsonp(url) {
       return new Promise((resolve, reject) => {
@@ -290,8 +299,11 @@ function updateSmokingVisual() {
     }
 
     async function loadSavedState() {
+      updateHumanityVisual();
+      updateSmokingVisual();
+
       if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_")) {
-        updateHumanityVisual();
+        saveStatus.textContent = "URL Apps Script не задан";
         return;
       }
 
@@ -300,33 +312,38 @@ function updateSmokingVisual() {
       try {
         const data = await jsonp(`${APPS_SCRIPT_URL}?action=get`);
 
+        if (!data || data.ok !== true) {
+          saveStatus.textContent = data && data.error ? data.error : "Ошибка загрузки";
+          return;
+        }
+
         if (Number.isFinite(Number(data.level))) {
           level.value = Number(data.level);
           levelValue.textContent = String(data.level);
         }
 
         if (Number.isFinite(Number(data.humanity))) {
-  humanity.value = Number(data.humanity);
-}
+          humanity.value = Number(data.humanity);
+        }
 
-if (Number.isFinite(Number(data.smoking))) {
-  smoking.value = Number(data.smoking);
-}
+        if (Number.isFinite(Number(data.smoking))) {
+          smoking.value = Number(data.smoking);
+        }
 
-updateHumanityVisual();
-updateSmokingVisual();
-saveStatus.textContent = "";
+        updateHumanityVisual();
+        updateSmokingVisual();
+        saveStatus.textContent = "";
       } catch (err) {
         console.error(err);
         updateHumanityVisual();
-updateSmokingVisual();
-saveStatus.textContent = "Не удалось загрузить";
+        updateSmokingVisual();
+        saveStatus.textContent = "Не удалось загрузить";
       }
     }
 
     async function saveSettings() {
       if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_")) {
-        saveStatus.textContent = "https://script.google.com/macros/s/AKfycbzzGAc8GZeztkcAA76jCVZ2CdMfBdCfSIi5nJWHegSamZIj3oQp-tm9nML8SfY5c4c/exec";
+        saveStatus.textContent = "URL Apps Script не задан";
         return;
       }
 
@@ -336,10 +353,17 @@ saveStatus.textContent = "Не удалось загрузить";
         const url =
           `${APPS_SCRIPT_URL}?action=set` +
           `&level=${encodeURIComponent(level.value)}` +
-          `&humanity=${encodeURIComponent(humanity.value)}`;
+          `&humanity=${encodeURIComponent(humanity.value)}` +
+          `&smoking=${encodeURIComponent(smoking.value)}`;
 
         const data = await jsonp(url);
-        saveStatus.textContent = data.ok ? "Сохранено" : "Ошибка";
+
+        if (!data || data.ok !== true) {
+          saveStatus.textContent = data && data.error ? data.error : "Ошибка";
+          return;
+        }
+
+        saveStatus.textContent = "Сохранено";
       } catch (err) {
         console.error(err);
         saveStatus.textContent = "Ошибка сохранения";
@@ -347,8 +371,8 @@ saveStatus.textContent = "Не удалось загрузить";
     }
 
     updateHumanityVisual();
-updateSmokingVisual();
-loadSavedState();
+    updateSmokingVisual();
+    loadSavedState();
   </script>
 
 </body>
